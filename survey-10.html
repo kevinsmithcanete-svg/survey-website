@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Correlation between Programming Language Learning Difficulty and Students Preference in Computer Engineering</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f0f0f0; --surface: #fff; --border: #dadce0;
+    --accent: #1a1a1a; --light: #f5f5f5; --text: #202124;
+    --muted: #5f6368; --error: #d93025;
+  }
+  body { font-family:'Roboto',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:32px 12px 80px; }
+  .page { max-width:700px; margin:0 auto; }
+
+  /* Header */
+  .header-card {
+    background:var(--surface); border-top:10px solid #1a1a1a;
+    border-radius:8px 8px 0 0;
+    box-shadow:0 1px 2px rgba(0,0,0,.12),0 2px 6px rgba(0,0,0,.08);
+    padding:28px 24px 24px; margin-bottom:12px;
+  }
+  .header-card h1 { font-family:'Google Sans',sans-serif; font-size:1.75rem; font-weight:400; margin-bottom:6px; }
+  .header-card p { font-size:.875rem; color:var(--muted); }
+
+  /* Card */
+  .card {
+    background:var(--surface); border-radius:8px;
+    box-shadow:0 1px 2px rgba(0,0,0,.12),0 2px 6px rgba(0,0,0,.08);
+    padding:24px; margin-bottom:12px;
+  }
+  .card-title {
+    font-family:'Google Sans',sans-serif; font-size:1rem; font-weight:500;
+    margin-bottom:20px; padding-bottom:12px; border-bottom:1px solid var(--border);
+  }
+
+  /* Underline inputs */
+  .gf-field label { display:block; font-size:.82rem; color:var(--muted); margin-bottom:4px; }
+  .gf-wrap { position:relative; }
+  .gf-input {
+    width:100%; border:none; border-bottom:1px solid #9e9e9e;
+    padding:4px 0 6px; font-family:'Roboto',sans-serif; font-size:.95rem;
+    color:var(--text); background:transparent; outline:none;
+  }
+  .gf-input:focus { border-bottom-color:var(--accent); }
+  .gf-bar { position:absolute; bottom:0; left:50%; width:0; height:2px; background:var(--accent); transition:width .2s,left .2s; }
+  .gf-input:focus ~ .gf-bar { width:100%; left:0; }
+  .name-grid { display:grid; grid-template-columns:1fr 90px 1fr; gap:20px; margin-bottom:24px; }
+
+  /* Radio */
+  .profile-cols { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+  .col-label { font-size:.78rem; color:var(--muted); font-weight:500; margin-bottom:8px; }
+  .radio-list { display:flex; flex-direction:column; gap:2px; }
+  .radio-item { display:flex; align-items:center; gap:14px; padding:9px 8px; border-radius:4px; cursor:pointer; font-size:.9rem; transition:background .15s; }
+  .radio-item:hover { background:var(--light); }
+  .radio-item input[type="radio"] { display:none; }
+  .rdot { width:18px; height:18px; border:2px solid #9e9e9e; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:border-color .15s; }
+  .radio-item input:checked ~ .rdot { border-color:var(--accent); }
+  .radio-item input:checked ~ .rdot::after { content:''; width:10px; height:10px; background:var(--accent); border-radius:50%; }
+
+  /* Scale tables */
+  .scale-cols { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .scale-name { font-size:.88rem; font-weight:500; margin-bottom:4px; }
+  .scale-sub { font-size:.76rem; color:var(--muted); font-style:italic; margin-bottom:10px; }
+  .scale-tbl { width:100%; border-collapse:collapse; font-size:.76rem; }
+  .scale-tbl th { font-size:.68rem; font-weight:500; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; padding:5px 6px; border-bottom:1.5px solid var(--border); text-align:left; background:#fafafa; }
+  .scale-tbl td { padding:5px 6px; border-bottom:1px solid #eee; vertical-align:top; line-height:1.4; }
+  .scale-tbl tr:last-child td { border-bottom:none; }
+  .score-cell { font-weight:700; text-align:center; width:28px; flex-shrink:0; }
+  .desc-cell { font-weight:500; }
+  .desc-cell .ind-text { display:block; font-weight:400; font-style:italic; color:var(--muted); font-size:.71rem; margin-top:2px; line-height:1.35; }
+  /* hide old separate ind-cell column — indicator is now inside desc-cell */
+  .scale-tbl .ind-col { display:none; }
+
+  /* Language table */
+  .table-wrap { overflow-x:auto; }
+  table.lang-tbl { width:100%; border-collapse:collapse; font-size:.87rem; }
+  table.lang-tbl thead tr { border-bottom:2px solid var(--border); }
+  table.lang-tbl th { font-size:.7rem; font-weight:500; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); padding:10px 10px; text-align:center; background:#fafafa; }
+  table.lang-tbl th:first-child { text-align:left; }
+  table.lang-tbl td { padding:12px 10px; border-bottom:1px solid #eee; text-align:center; vertical-align:middle; }
+  table.lang-tbl td:first-child { text-align:left; }
+  table.lang-tbl tbody tr:last-child td { border-bottom:none; }
+  table.lang-tbl tbody tr:hover td { background:#fafafa; }
+  .row-error td { background:#fff8f8 !important; }
+
+  /* Checkbox */
+  .cb-box { width:20px; height:20px; border:2px solid #9e9e9e; border-radius:3px; margin:0 auto; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s,border-color .15s; }
+  .cb-box.checked { background:var(--accent); border-color:var(--accent); }
+  .cb-box.checked::after { content:'✓'; color:#fff; font-size:12px; font-weight:700; }
+
+  /* ── Dropdown score picker ── */
+  .dropdown-wrap {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    min-width: 130px;
+  }
+
+  .drop-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 6px 10px;
+    border: 1.5px solid #d0d0d0;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    font-size: .82rem;
+    color: #9e9e9e;
+    transition: border-color .15s;
+    user-select: none;
+    min-width: 130px;
+  }
+  .drop-trigger.active { border-color: var(--accent); color: var(--text); }
+  .drop-trigger.disabled { opacity: .3; cursor: not-allowed; pointer-events: none; }
+  .drop-trigger .arrow {
+    width: 0; height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid #888;
+    flex-shrink: 0;
+    transition: transform .15s;
+  }
+  .drop-trigger.open .arrow { transform: rotate(180deg); }
+
+  .drop-trigger .trigger-text { flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* Dropdown menu */
+  .drop-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 999;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.15);
+    min-width: 260px;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+  .drop-menu.show { display: block; }
+
+  .drop-item {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 0 8px;
+    align-items: start;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background .12s;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .drop-item:last-child { border-bottom: none; }
+  .drop-item:hover { background: #f5f5f5; }
+  .drop-item.selected { background: #f0f0f0; }
+
+  .di-num {
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-align: center;
+    padding-top: 2px;
+  }
+  .di-info { display: flex; flex-direction: column; gap: 2px; }
+  .di-desc { font-size: .82rem; font-weight: 500; color: var(--text); }
+  .di-ind  { font-size: .73rem; color: var(--muted); font-style: italic; line-height: 1.3; }
+
+  /* Selected display under trigger */
+  .selected-info {
+    font-size: .72rem;
+    color: var(--accent);
+    margin-top: 5px;
+    text-align: left;
+    min-height: 14px;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .selected-info .si-desc { font-weight: 600; color: var(--accent); }
+  .selected-info .si-ind  { color: var(--muted); font-style: italic; font-size: .70rem; }
+
+  /* Add row */
+  .add-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:14px 10px; border-top:1px solid var(--border); }
+  .add-row label { font-size:.82rem; color:var(--muted); }
+  .add-input { flex:1; min-width:140px; border:none; border-bottom:1px solid #9e9e9e; padding:4px 0 5px; font-family:'Roboto',sans-serif; font-size:.88rem; color:var(--text); background:transparent; outline:none; }
+  .add-input:focus { border-bottom-color:var(--accent); }
+  .add-btn { padding:6px 16px; border:1.5px solid var(--accent); border-radius:4px; background:transparent; font-family:'Roboto',sans-serif; font-size:.82rem; font-weight:500; color:var(--accent); cursor:pointer; transition:background .15s,color .15s; }
+  .add-btn:hover { background:var(--accent); color:#fff; }
+  .add-note { font-size:.75rem; color:var(--muted); padding:0 10px 12px; font-style:italic; }
+  .rm-btn { background:none; border:none; cursor:pointer; color:#bbb; font-size:.78rem; margin-left:5px; }
+  .rm-btn:hover { color:var(--error); }
+
+  /* Buttons */
+  .btn-row { display:flex; gap:10px; justify-content:flex-end; padding:0 4px; margin-top:4px; }
+  .btn { padding:10px 24px; border-radius:4px; font-family:'Roboto',sans-serif; font-size:.88rem; font-weight:500; cursor:pointer; border:none; transition:background .15s; }
+  .btn-ghost { background:transparent; color:var(--accent); }
+  .btn-ghost:hover { background:var(--light); }
+  .btn-solid { background:var(--accent); color:#fff; box-shadow:0 1px 3px rgba(0,0,0,.2); }
+  .btn-solid:hover { background:#333; }
+
+  @media(max-width:560px){
+    .name-grid { grid-template-columns:1fr; }
+    .profile-cols { grid-template-columns:1fr 1fr; }
+    .scale-cols { grid-template-columns:1fr; }
+    .ind-cell { display:none; }
+    .drop-menu { min-width:200px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header-card">
+    <h1>Correlation between the Programming Language Learning Difficulty and Students Preference in Computer Engineering</h1>
+    <p>Please evaluate your experience with programming languages</p>
+  </div>
+
+  <!-- Section 1 -->
+  <div class="card">
+    <div class="card-title">Section 1 — Profile Information</div>
+    <div class="name-grid">
+      <div class="gf-field">
+        <label>First Name</label>
+        <div class="gf-wrap"><input class="gf-input" id="firstName" type="text" placeholder="Juan"><div class="gf-bar"></div></div>
+      </div>
+      <div class="gf-field">
+        <label>M.I.</label>
+        <div class="gf-wrap"><input class="gf-input" id="middleInitial" type="text" placeholder="D." maxlength="3"><div class="gf-bar"></div></div>
+      </div>
+      <div class="gf-field">
+        <label>Surname</label>
+        <div class="gf-wrap"><input class="gf-input" id="surname" type="text" placeholder="Dela Cruz"><div class="gf-bar"></div></div>
+      </div>
+    </div>
+    <div class="profile-cols">
+      <div>
+        <div class="col-label">Gender</div>
+        <div class="radio-list">
+          <label class="radio-item"><input type="radio" name="gender" value="Male"><span class="rdot"></span>Male</label>
+          <label class="radio-item"><input type="radio" name="gender" value="Female"><span class="rdot"></span>Female</label>
+        </div>
+      </div>
+      <div>
+        <div class="col-label">Year Level</div>
+        <div class="radio-list">
+          <label class="radio-item"><input type="radio" name="year" value="1st Year"><span class="rdot"></span>1st Year</label>
+          <label class="radio-item"><input type="radio" name="year" value="2nd Year"><span class="rdot"></span>2nd Year</label>
+        </div>
+      </div>
+      <div>
+        <div class="col-label">Section</div>
+        <div class="radio-list">
+          <label class="radio-item"><input type="radio" name="section" value="A"><span class="rdot"></span>A</label>
+          <label class="radio-item"><input type="radio" name="section" value="B"><span class="rdot"></span>B</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2 -->
+  <div class="card">
+    <div class="card-title">Section 2 — Evaluation Scale Guide</div>
+    <div class="scale-cols">
+
+      <!-- Perceived Difficulty -->
+      <div>
+        <div class="scale-name">Perceived Difficulty</div>
+        <div class="scale-sub">How hard is it for you to learn and use this language?</div>
+        <table class="scale-tbl">
+          <thead><tr><th>Score</th><th>Description &amp; Technical Indicator</th></tr></thead>
+          <tbody>
+            <tr><td class="score-cell">1</td><td class="desc-cell">Very Hard<span class="ind-text">I feel completely lost; the syntax is a barrier.</span></td></tr>
+            <tr><td class="score-cell">2</td><td class="desc-cell">Extremely Hard<span class="ind-text">I spend hours debugging a single function.</span></td></tr>
+            <tr><td class="score-cell">3</td><td class="desc-cell">Very Difficult<span class="ind-text">The logic is complex and mentally draining.</span></td></tr>
+            <tr><td class="score-cell">4</td><td class="desc-cell">Difficult<span class="ind-text">I often get errors I cannot fix alone.</span></td></tr>
+            <tr><td class="score-cell">5</td><td class="desc-cell">Challenging<span class="ind-text">I struggle with certain advanced concepts.</span></td></tr>
+            <tr><td class="score-cell">6</td><td class="desc-cell">Moderate<span class="ind-text">Average difficulty; requires regular study.</span></td></tr>
+            <tr><td class="score-cell">7</td><td class="desc-cell">Manageable<span class="ind-text">It takes effort, but I don't get "stuck."</span></td></tr>
+            <tr><td class="score-cell">8</td><td class="desc-cell">Fairly Easy<span class="ind-text">I rarely need to look at documentation.</span></td></tr>
+            <tr><td class="score-cell">9</td><td class="desc-cell">Easy<span class="ind-text">Very simple; code is readable and logical.</span></td></tr>
+            <tr><td class="score-cell">10</td><td class="desc-cell">Very Easy<span class="ind-text">I understood the basics almost instantly.</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Student Preference -->
+      <div>
+        <div class="scale-name">Student Preference</div>
+        <div class="scale-sub">How much do you actually like or want to use this language?</div>
+        <table class="scale-tbl">
+          <thead><tr><th>Score</th><th>Description &amp; Emotional Indicator</th></tr></thead>
+          <tbody>
+            <tr><td class="score-cell">1</td><td class="desc-cell">Strongly Dislike<span class="ind-text">I hate this language and avoid it if possible.</span></td></tr>
+            <tr><td class="score-cell">2</td><td class="desc-cell">Dislike<span class="ind-text">I find using this language very frustrating.</span></td></tr>
+            <tr><td class="score-cell">3</td><td class="desc-cell">Somewhat Dislike<span class="ind-text">I use it only because it is a requirement.</span></td></tr>
+            <tr><td class="score-cell">4</td><td class="desc-cell">Slightly Dislike<span class="ind-text">I'd much rather use a different language.</span></td></tr>
+            <tr><td class="score-cell">5</td><td class="desc-cell">Neutral<span class="ind-text">I have no strong feelings about this language.</span></td></tr>
+            <tr><td class="score-cell">6</td><td class="desc-cell">Slightly Like<span class="ind-text">It's okay; I don't mind working with it.</span></td></tr>
+            <tr><td class="score-cell">7</td><td class="desc-cell">Somewhat Like<span class="ind-text">I enjoy using it for most school tasks.</span></td></tr>
+            <tr><td class="score-cell">8</td><td class="desc-cell">Like<span class="ind-text">It is one of my go-to languages for projects.</span></td></tr>
+            <tr><td class="score-cell">9</td><td class="desc-cell">Very Much Like<span class="ind-text">I find it fun and highly rewarding to use.</span></td></tr>
+            <tr><td class="score-cell">10</td><td class="desc-cell">Strongly Like<span class="ind-text">This is my favorite language of all.</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Section 3 -->
+  <div class="card">
+    <div class="card-title">Section 3 — Programming Language Evaluation</div>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:16px;">
+      Check (✓) languages you have experience with, then use the dropdowns to select your score (1–10). The description will appear below each selection.
+    </p>
+    <div class="table-wrap">
+      <table class="lang-tbl">
+        <thead>
+          <tr>
+            <th style="width:22%;text-align:left">Language</th>
+            <th style="width:7%">✓</th>
+            <th>Difficulty</th>
+            <th>Preference</th>
+          </tr>
+        </thead>
+        <tbody id="lang-rows">
+          <!-- Python -->
+          <tr id="row-Python"><td>Python</td><td><div class="cb-box" id="cb-Python" onclick="toggleCB('Python')"></div></td><td id="td-x-Python"></td><td id="td-y-Python"></td></tr>
+          <!-- C# -->
+          <tr id="row-C___C_Sharp_"><td>C# (C-Sharp)</td><td><div class="cb-box" id="cb-C___C_Sharp_" onclick="toggleCB('C___C_Sharp_')"></div></td><td id="td-x-C___C_Sharp_"></td><td id="td-y-C___C_Sharp_"></td></tr>
+          <!-- Java -->
+          <tr id="row-Java"><td>Java</td><td><div class="cb-box" id="cb-Java" onclick="toggleCB('Java')"></div></td><td id="td-x-Java"></td><td id="td-y-Java"></td></tr>
+          <!-- C++ -->
+          <tr id="row-C__"><td>C++</td><td><div class="cb-box" id="cb-C__" onclick="toggleCB('C__')"></div></td><td id="td-x-C__"></td><td id="td-y-C__"></td></tr>
+          <!-- JavaScript -->
+          <tr id="row-JavaScript"><td>JavaScript</td><td><div class="cb-box" id="cb-JavaScript" onclick="toggleCB('JavaScript')"></div></td><td id="td-x-JavaScript"></td><td id="td-y-JavaScript"></td></tr>
+          <!-- C -->
+          <tr id="row-C_lang"><td>C</td><td><div class="cb-box" id="cb-C_lang" onclick="toggleCB('C_lang')"></div></td><td id="td-x-C_lang"></td><td id="td-y-C_lang"></td></tr>
+          <!-- SQL -->
+          <tr id="row-SQL"><td>SQL</td><td><div class="cb-box" id="cb-SQL" onclick="toggleCB('SQL')"></div></td><td id="td-x-SQL"></td><td id="td-y-SQL"></td></tr>
+          <!-- Bash -->
+          <tr id="row-Bash__PowerShell_"><td>Bash (PowerShell)</td><td><div class="cb-box" id="cb-Bash__PowerShell_" onclick="toggleCB('Bash__PowerShell_')"></div></td><td id="td-x-Bash__PowerShell_"></td><td id="td-y-Bash__PowerShell_"></td></tr>
+        </tbody>
+        <tbody id="dynamic-rows"></tbody>
+      </table>
+      <div class="add-row">
+        <label>Other:</label>
+        <input class="add-input" id="otherInput" type="text" placeholder="Type language name…">
+        <button class="add-btn" onclick="addLang()">+ Add</button>
+      </div>
+      <p class="add-note">Type a language and click Add — it will appear as a new rateable row.</p>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-ghost" onclick="clearForm()">Clear form</button>
+    <button class="btn btn-solid" onclick="submitSurvey()">Submit</button>
+  </div>
+</div>
+
+<script>
+const DEFAULT_LANGS = ['Python','C# (C-Sharp)','Java','C++','JavaScript','C_lang','SQL','Bash (PowerShell)'];
+const LANG_LABELS = {'C_lang':'C'};
+
+const SCALE_X = [
+  {n:1,  desc:'Very Hard',      ind:'I feel completely lost; the syntax is a barrier.'},
+  {n:2,  desc:'Extremely Hard', ind:'I spend hours debugging a single function.'},
+  {n:3,  desc:'Very Difficult', ind:'The logic is complex and mentally draining.'},
+  {n:4,  desc:'Difficult',      ind:'I often get errors I cannot fix alone.'},
+  {n:5,  desc:'Challenging',    ind:'I struggle with certain advanced concepts.'},
+  {n:6,  desc:'Moderate',       ind:'Average difficulty; requires regular study.'},
+  {n:7,  desc:'Manageable',     ind:'It takes effort, but I don\'t get "stuck."'},
+  {n:8,  desc:'Fairly Easy',    ind:'I rarely need to look at documentation.'},
+  {n:9,  desc:'Easy',           ind:'Very simple; code is readable and logical.'},
+  {n:10, desc:'Very Easy',      ind:'I understood the basics almost instantly.'}
+];
+const SCALE_Y = [
+  {n:1,  desc:'Strongly Dislike', ind:'I hate this language and avoid it if possible.'},
+  {n:2,  desc:'Dislike',          ind:'I find using this language very frustrating.'},
+  {n:3,  desc:'Somewhat Dislike', ind:'I use it only because it is a requirement.'},
+  {n:4,  desc:'Slightly Dislike', ind:'I\'d much rather use a different language.'},
+  {n:5,  desc:'Neutral',          ind:'I have no strong feelings about this language.'},
+  {n:6,  desc:'Slightly Like',    ind:'It\'s okay; I don\'t mind working with it.'},
+  {n:7,  desc:'Somewhat Like',    ind:'I enjoy using it for most school tasks.'},
+  {n:8,  desc:'Like',             ind:'It is one of my go-to languages for projects.'},
+  {n:9,  desc:'Very Much Like',   ind:'I find it fun and highly rewarding to use.'},
+  {n:10, desc:'Strongly Like',    ind:'This is my favorite language of all.'}
+];
+
+const scores = {};
+let dynLangs = [];
+let openDropId = null; // track currently open dropdown
+
+function sid(lang){ return lang.replace(/[^a-z0-9]/gi,'_'); }
+
+function buildDropdown(id, axis) {
+  const scaleData = axis === 'x' ? SCALE_X : SCALE_Y;
+  const items = scaleData.map(s =>
+    `<div class="drop-item" id="di-${id}-${axis}-${s.n}" onclick="selectScore('${id}','${axis}',${s.n},event)">
+      <div class="di-num">${s.n}</div>
+      <div class="di-info">
+        <div class="di-desc">${s.desc}</div>
+        <div class="di-ind">${s.ind}</div>
+      </div>
+    </div>`
+  ).join('');
+
+  return `<div class="dropdown-wrap" id="dw-${id}-${axis}">
+    <div class="drop-trigger disabled" id="dt-${id}-${axis}" onclick="toggleDrop('${id}','${axis}',event)">
+      <span class="trigger-text">Select score…</span>
+      <span class="arrow"></span>
+    </div>
+    <div class="drop-menu" id="dm-${id}-${axis}">${items}</div>
+    <div class="selected-info" id="si-${id}-${axis}"></div>
+  </div>`;
+}
+
+function buildRow(lang, dynamic=false){
+  const id = sid(lang);
+  scores[id] = {x:null, y:null};
+  const rm = dynamic ? `<button class="rm-btn" onclick="removeLang('${id}','${lang}')">✕</button>` : '';
+  const displayName = LANG_LABELS[lang] || lang;
+  return `<tr id="row-${id}">
+    <td>${displayName}${rm}</td>
+    <td><div class="cb-box" id="cb-${id}" onclick="toggleCB('${id}')"></div></td>
+    <td>${buildDropdown(id,'x')}</td>
+    <td>${buildDropdown(id,'y')}</td>
+  </tr>`;
+}
+
+function toggleDrop(id, axis, e){
+  e.stopPropagation();
+  const menu = document.getElementById(`dm-${id}-${axis}`);
+  const trigger = document.getElementById(`dt-${id}-${axis}`);
+  const key = `${id}-${axis}`;
+
+  // close any other open dropdown
+  if(openDropId && openDropId !== key){
+    const [oid, oax] = openDropId.split('--');
+    closeDropById(openDropId);
+  }
+
+  const isOpen = menu.classList.contains('show');
+  if(isOpen){
+    menu.classList.remove('show');
+    trigger.classList.remove('open');
+    openDropId = null;
+  } else {
+    menu.classList.add('show');
+    trigger.classList.add('open');
+    openDropId = key;
+  }
+}
+
+function closeDropById(key){
+  // key is "id--axis" style - but we stored as "id-axis", split last dash
+  const lastDash = key.lastIndexOf('-');
+  const id = key.substring(0, lastDash);
+  const axis = key.substring(lastDash+1);
+  document.getElementById(`dm-${id}-${axis}`)?.classList.remove('show');
+  document.getElementById(`dt-${id}-${axis}`)?.classList.remove('open');
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', ()=>{
+  if(openDropId){
+    const lastDash = openDropId.lastIndexOf('-');
+    const id = openDropId.substring(0, lastDash);
+    const axis = openDropId.substring(lastDash+1);
+    document.getElementById(`dm-${id}-${axis}`)?.classList.remove('show');
+    document.getElementById(`dt-${id}-${axis}`)?.classList.remove('open');
+    openDropId = null;
+  }
+});
+
+function selectScore(id, axis, val, e){
+  e.stopPropagation();
+  const scaleData = axis==='x' ? SCALE_X : SCALE_Y;
+  const entry = scaleData.find(s=>s.n===val);
+  scores[id][axis] = val;
+
+  // update trigger text
+  const trigger = document.getElementById(`dt-${id}-${axis}`);
+  trigger.querySelector('.trigger-text').textContent = `${val} — ${entry.desc}`;
+  trigger.classList.add('active');
+
+  // highlight selected item
+  scaleData.forEach(s=>{
+    document.getElementById(`di-${id}-${axis}-${s.n}`)?.classList.remove('selected');
+  });
+  document.getElementById(`di-${id}-${axis}-${val}`)?.classList.add('selected');
+
+  // show description + indicator on separate lines below
+  const si = document.getElementById(`si-${id}-${axis}`);
+  if(si) si.innerHTML = `<span class="si-desc">${entry.desc}</span><span class="si-ind">${entry.ind}</span>`;
+
+  // close menu
+  document.getElementById(`dm-${id}-${axis}`)?.classList.remove('show');
+  trigger.classList.remove('open');
+  openDropId = null;
+
+  document.getElementById('row-'+id)?.classList.remove('row-error');
+}
+
+function toggleCB(id){
+  const cb = document.getElementById('cb-'+id);
+  const on = cb.classList.toggle('checked');
+  ['x','y'].forEach(ax=>{
+    const trigger = document.getElementById(`dt-${id}-${ax}`);
+    if(trigger) trigger.classList.toggle('disabled', !on);
+  });
+  if(!on){
+    scores[id]={x:null,y:null};
+    ['x','y'].forEach(ax=>{
+      const trigger = document.getElementById(`dt-${id}-${ax}`);
+      if(trigger){ trigger.querySelector('.trigger-text').textContent='Select score…'; trigger.classList.remove('active'); }
+      const si = document.getElementById(`si-${id}-${ax}`);
+      if(si) si.innerHTML='';
+      // close menu if open
+      document.getElementById(`dm-${id}-${ax}`)?.classList.remove('show');
+      trigger?.classList.remove('open');
+    });
+    document.getElementById('row-'+id)?.classList.remove('row-error');
+  }
+}
+
+function initRows(){
+  DEFAULT_LANGS.forEach(lang => {
+    const id = sid(lang);
+    scores[id] = {x:null, y:null};
+    const tdx = document.getElementById('td-x-'+id);
+    const tdy = document.getElementById('td-y-'+id);
+    if(tdx) tdx.innerHTML = buildDropdown(id,'x');
+    if(tdy) tdy.innerHTML = buildDropdown(id,'y');
+  });
+}
+
+function addLang(){
+  const inp = document.getElementById('otherInput');
+  const lang = inp.value.trim();
+  if(!lang) return;
+  if(dynLangs.includes(lang.toLowerCase())){alert('Already added.');return;}
+  dynLangs.push(lang.toLowerCase());
+  const tmp = document.createElement('tbody');
+  tmp.innerHTML = buildRow(lang, true);
+  document.getElementById('dynamic-rows').appendChild(tmp.firstElementChild);
+  inp.value='';
+}
+
+function removeLang(id, lang){
+  document.getElementById('row-'+id)?.remove();
+  delete scores[id];
+  dynLangs = dynLangs.filter(l=>l!==lang.toLowerCase());
+}
+
+function clearForm(){
+  if(!confirm('Clear all form data?')) return;
+  ['firstName','middleInitial','surname'].forEach(id=>document.getElementById(id).value='');
+  document.querySelectorAll('input[type="radio"]').forEach(r=>r.checked=false);
+  document.getElementById('dynamic-rows').innerHTML='';
+  dynLangs=[];
+  for(let k in scores) delete scores[k];
+  initRows();
+}
+
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzmYZ3SKvUvphWWDKmSrtdPDdYJqSpXocIUuC5lWCjDRCNVig_t3UJgR9LL7z3Yjony/exec';
+
+function submitSurvey(){
+  const first = document.getElementById('firstName').value.trim();
+  const mi = document.getElementById('middleInitial').value.trim();
+  const surname = document.getElementById('surname').value.trim();
+  if(!first||!surname){alert('Please enter your first name and surname.');return;}
+  const gender  = document.querySelector('input[name="gender"]:checked');
+  const year    = document.querySelector('input[name="year"]:checked');
+  const section = document.querySelector('input[name="section"]:checked');
+  if(!gender||!year||!section){alert('Please complete Gender, Year Level, and Section.');return;}
+
+  let valid=true;
+  document.querySelectorAll('.cb-box.checked').forEach(cb=>{
+    const id=cb.id.replace('cb-','');
+    const row=document.getElementById('row-'+id);
+    if(scores[id]?.x===null||scores[id]?.y===null){
+      valid=false; row?.classList.add('row-error');
+    } else {
+      row?.classList.remove('row-error');
+    }
+  });
+  if(!valid){alert('Please select both Difficulty and Preference scores for all checked languages.');return;}
+
+  // Build data object
+  const data = {
+    Timestamp: new Date().toLocaleString(),
+    FirstName: first,
+    MiddleInitial: mi,
+    Surname: surname,
+    Gender: gender.value,
+    YearLevel: year.value,
+    Section: section.value
+  };
+
+  // Add language scores
+  document.querySelectorAll('.cb-box.checked').forEach(cb=>{
+    const id = cb.id.replace('cb-','');
+    const label = document.querySelector('#row-'+id+' td:first-child').textContent.replace('✕','').trim();
+    data[label+'_Difficulty'] = scores[id].x;
+    data[label+'_Preference'] = scores[id].y;
+  });
+
+  // Show loading
+  const submitBtn = document.querySelector('.btn-solid');
+  submitBtn.textContent = 'Submitting…';
+  submitBtn.disabled = true;
+
+  // Use image trick to bypass CORS — works from local files too
+  const params = Object.entries(data).map(([k,v])=>encodeURIComponent(k)+'='+encodeURIComponent(v)).join('&');
+  const img = new Image();
+  img.onload = img.onerror = function(){
+    alert('✓ Survey submitted successfully!\n\nThank you for your participation!');
+    submitBtn.textContent = 'Submit';
+    submitBtn.disabled = false;
+  };
+  img.src = SHEET_URL + '?' + params;
+}
+
+initRows();
+document.getElementById('otherInput').addEventListener('keydown',e=>{if(e.key==='Enter')addLang();});
+</script>
+</body>
+</html>
